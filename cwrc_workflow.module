@@ -135,7 +135,15 @@ function cwrc_workflow_preprocess_cwrc_workflow_stamp(&$variables) {
   $variables['activity_status'] = (string) $stamp->xpath('activity/@status')[0];
 
   // Date the stamp was created.
-  $date_time = (string) $stamp->xpath('@date')[0] . 'T' . (string) $stamp->xpath('@time')[0];
+  $date = $stamp->xpath('@date');
+  if (!$date || count($date) < 1) $date = '';
+  else $date = (string) $date[0];
+
+  $time = $stamp->xpath('@time');
+  if (!$time || count($time) < 1) $time = '';
+  else $time = (string) $time[0];
+
+  $date_time = $date . 'T' . $time;
   $variables['stamp_date_time'] = format_date(strtotime($date_time));
 
   // User-based values (link to user if access allows).
@@ -150,7 +158,7 @@ function cwrc_workflow_preprocess_cwrc_workflow_stamp(&$variables) {
       $account = user_load_by_name((string) $check[0]);
       if (user_view_access($account)) {
         $variables[$field] = l(realname_load($account), entity_uri('user', $account)['path']);
-      } else if ($account !== null && $account->uid != 0) {
+      } else if ($account !== FALSE && $account->uid != 0) {
         $variables[$field] = realname_load($account);
       } else if ($field == 'stamp_user') {
         $variables[$field] = t('(Unknown)');
@@ -258,7 +266,7 @@ function cwrc_workflow_block_view($delta = '') {
         // TODO: Find a better way to limit to view displays.
         $menu_item = menu_get_item();
         if ($menu_item['path'] == 'islandora/object/%/view' || $menu_item['path'] == 'islandora/object/%') {
-          $block['subject'] = t('History <span class="cwrc-workflow-num-stamps badge pull-right">@count stamps</span>', array('@count' => $stamps['total']));
+          $block['subject'] = t('History <span class="cwrc-workflow-num-stamps badge">@count stamps</span>', array('@count' => $stamps['total']));
           $block['content'] = theme('cwrc_workflow_stamps_block', array('stamps' => $stamps['stamps'], 'object' => $stamps['object']));
         }
       }
@@ -296,7 +304,7 @@ function cwrc_workflow_get_stamps($num_stamps = NULL) {
     return false;
   }
 
-  $workflow = simplexml_load_string($object[CWRC_WORKFLOW_DSID]->content)->xpath('workflow');
+  $workflow = @simplexml_load_string($object[CWRC_WORKFLOW_DSID]->content)->xpath('workflow');
   return array(
     'total' => count($workflow),
     'stamps' => array_slice(array_reverse($workflow), 0, $num_stamps),
@@ -443,5 +451,19 @@ function cwrc_workflow_page_alter(&$page) {
 
     // Always clear the alerts, don't pester people.
     unset($_SESSION['cwrc_workflow']['alerts']);
+  }
+
+  // Set persistant warning when the current user has un-stamped activity.
+  if ($user->uid != 0) {
+    $unstamped = (int) db_select('islandora_workflow_rest_ds_logs', 'l')
+      ->condition('l.usr', $user->uid)
+      ->condition('l.state', 'new')
+      ->countQuery()
+      ->execute()
+      ->fetchField();
+
+    if ($unstamped > 0 && current_path() != 'cwrc_workflow') {
+      drupal_set_message(t('You have <strong>@count</strong> unstamped log entries. Please <a href="@url">review these here</a>.', array('@count' => $unstamped, '@url' => url('cwrc_workflow'))), 'warning', FALSE);
+    }
   }
 }

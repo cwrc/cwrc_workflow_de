@@ -4,7 +4,7 @@
   <?php } ?>
 
   <div class="cwrc-workflow-history-link-wrapper">
-    <a href="<?php print url('islandora/object/' . $object->id . '/history'); ?>">
+    <a href="<?php print url('islandora/object/' . $object->id . '/view/history'); ?>">
       <?php print t('See all workflow stamps'); ?>
     </a>
   </div>

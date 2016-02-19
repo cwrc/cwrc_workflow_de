@@ -1,8 +1,7 @@
 name = CWRC: Workflow Extras
 description = Provides additions and configuration for the CWRC workflow module.
 core = 7.x
-package = CWRC Custom
-project = cwrc-module-cwrc_workflow_de
+package = CWRC
 dependencies[] = borealis_sb
 dependencies[] = ctools
 dependencies[] = fe_block
