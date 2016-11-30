@@ -7,7 +7,11 @@
 
 include_once 'cwrc_workflow.features.inc';
 
+/* Constants. */
+
 define('CWRC_WORKFLOW_DSID', 'WORKFLOW');
+
+/* Hooks. */
 
 /**
  * Implements hook_menu().
@@ -303,26 +307,6 @@ function cwrc_workflow_block_view($delta = '') {
 }
 
 /**
- * Returns a set of stamps in a nested array with the total number of stamps.
- */
-function cwrc_workflow_get_stamps($num_stamps = NULL) {
-  $object = menu_get_object('islandora_object', 2);
-
-  // Sanity check.
-  if ($object === NULL
-    || !isset($object[CWRC_WORKFLOW_DSID])) {
-    return FALSE;
-  }
-
-  $workflow = @simplexml_load_string($object[CWRC_WORKFLOW_DSID]->content)->xpath('workflow');
-  return array(
-    'total' => count($workflow),
-    'stamps' => array_slice(array_reverse($workflow), 0, $num_stamps),
-    'object' => $object,
-  );
-}
-
-/**
  * Implements hook_form_islandora_workflow_rest_entry_form_alter().
  */
 function cwrc_workflow_form_islandora_workflow_rest_entry_form_alter(&$form, &$form_state, $form_id) {
@@ -473,4 +457,26 @@ function cwrc_workflow_page_alter(&$page) {
       drupal_set_message(t('You have <strong>@count</strong> unstamped log entries. Please <a href="@url">review these here</a>.', array('@count' => $unstamped, '@url' => url('cwrc_workflow'))), 'warning', FALSE);
     }
   }
+}
+
+/* Helper functions. */
+
+/**
+ * Returns a set of stamps in a nested array with the total number of stamps.
+ */
+function cwrc_workflow_get_stamps($num_stamps = NULL) {
+  $object = menu_get_object('islandora_object', 2);
+
+  // Sanity check.
+  if ($object === NULL
+    || !isset($object[CWRC_WORKFLOW_DSID])) {
+    return FALSE;
+  }
+
+  $workflow = @simplexml_load_string($object[CWRC_WORKFLOW_DSID]->content)->xpath('workflow');
+  return array(
+    'total' => count($workflow),
+    'stamps' => array_slice(array_reverse($workflow), 0, $num_stamps),
+    'object' => $object,
+  );
 }
