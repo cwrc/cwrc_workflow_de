@@ -1,3 +1,10 @@
+<?php
+
+/**
+ * @file
+ * Displays a block with a list of workflow stamps.
+ */
+?>
 <div class="<?php echo $classes; ?>">
   <?php foreach ($stamps as $stamp) { ?>
     <?php print render($stamp); ?>

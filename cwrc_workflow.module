@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Code for the CWRC: Workflow Extras feature.
@@ -28,10 +29,9 @@ function cwrc_workflow_menu() {
 
 /**
  * Implements hook_menu_alter().
- *
- * Removes the old "workflow" tab.
  */
 function cwrc_workflow_menu_alter(&$items) {
+  // Removes the old "workflow" tab.
   $items['islandora/object/%islandora_object/workflow']['type'] = MENU_CALLBACK;
 }
 
@@ -44,23 +44,23 @@ function cwrc_workflow_theme($existing, $type, $theme, $path) {
     'cwrc_workflow_stamp' => array(
       'template' => 'templates/cwrc-workflow-stamp',
       'variables' => array(
-        'stamp' => null,
-        'object' => null,
-        'stamp_id' => null,
-        'stamp_date_time' => null,
-        'stamp_user' => null,
-        'activity_category' => null,
-        'activity_stamp' => null,
-        'activity_status' => null,
-        'activity_note' => null,
-        'activity_message_recipient' => null,
-        'activity_message_subject' => null,
-        'activity_message_body' => null,
-        'assigned_category' => null,
-        'assigned_note' => null,
-        'assigned_message_recipient' => null,
-        'assigned_message_subject' => null,
-        'assigned_message_body' => null,
+        'stamp' => NULL,
+        'object' => NULL,
+        'stamp_id' => NULL,
+        'stamp_date_time' => NULL,
+        'stamp_user' => NULL,
+        'activity_category' => NULL,
+        'activity_stamp' => NULL,
+        'activity_status' => NULL,
+        'activity_note' => NULL,
+        'activity_message_recipient' => NULL,
+        'activity_message_subject' => NULL,
+        'activity_message_body' => NULL,
+        'assigned_category' => NULL,
+        'assigned_note' => NULL,
+        'assigned_message_recipient' => NULL,
+        'assigned_message_subject' => NULL,
+        'assigned_message_body' => NULL,
       ),
     ),
 
@@ -68,8 +68,8 @@ function cwrc_workflow_theme($existing, $type, $theme, $path) {
     'cwrc_workflow_stamps' => array(
       'template' => 'templates/cwrc-workflow-stamps',
       'variables' => array(
-        'stamps' => null,
-        'object' => null,
+        'stamps' => NULL,
+        'object' => NULL,
       ),
     ),
 
@@ -77,8 +77,8 @@ function cwrc_workflow_theme($existing, $type, $theme, $path) {
     'cwrc_workflow_stamps_block' => array(
       'template' => 'templates/cwrc-workflow-stamps-block',
       'variables' => array(
-        'stamps' => null,
-        'object' => null,
+        'stamps' => NULL,
+        'object' => NULL,
       ),
     ),
 
@@ -86,16 +86,16 @@ function cwrc_workflow_theme($existing, $type, $theme, $path) {
     'cwrc_workflow_stamp_form_modal' => array(
       'template' => 'templates/cwrc-workflow-stamp-form-modal',
       'variables' => array(
-        'form' => null,
-        'object' => null,
-        'message' => null,
+        'form' => NULL,
+        'object' => NULL,
+        'message' => NULL,
       ),
     ),
   );
 }
 
 /**
- * Implementation of hook_libraries_info().
+ * Implements hook_libraries_info().
  */
 function cwrc_workflow_libraries_info() {
   $libraries = array();
@@ -121,11 +121,10 @@ function cwrc_workflow_libraries_info() {
 }
 
 /**
- * Implementation of hook_preprocess_cwrc_workflow_stamp().
- *
- * Parses out the various elements of a workflow stamp using xpath.
+ * Implements hook_preprocess_cwrc_workflow_stamp().
  */
 function cwrc_workflow_preprocess_cwrc_workflow_stamp(&$variables) {
+  // Parses out the various elements of a workflow stamp using xpath.
   $stamp = $variables['stamp'];
 
   // These values always exist.
@@ -136,12 +135,20 @@ function cwrc_workflow_preprocess_cwrc_workflow_stamp(&$variables) {
 
   // Date the stamp was created.
   $date = $stamp->xpath('@date');
-  if (!$date || count($date) < 1) $date = '';
-  else $date = (string) $date[0];
+  if (!$date || count($date) < 1) {
+    $date = '';
+  }
+  else {
+    $date = (string) $date[0];
+  }
 
   $time = $stamp->xpath('@time');
-  if (!$time || count($time) < 1) $time = '';
-  else $time = (string) $time[0];
+  if (!$time || count($time) < 1) {
+    $time = '';
+  }
+  else {
+    $time = (string) $time[0];
+  }
 
   $date_time = $date . 'T' . $time;
   $variables['stamp_date_time'] = format_date(strtotime($date_time));
@@ -158,9 +165,11 @@ function cwrc_workflow_preprocess_cwrc_workflow_stamp(&$variables) {
       $account = user_load_by_name((string) $check[0]);
       if (user_view_access($account)) {
         $variables[$field] = l(realname_load($account), entity_uri('user', $account)['path']);
-      } else if ($account !== FALSE && $account->uid != 0) {
+      }
+      elseif ($account !== FALSE && $account->uid != 0) {
         $variables[$field] = realname_load($account);
-      } else if ($field == 'stamp_user') {
+      }
+      elseif ($field == 'stamp_user') {
         $variables[$field] = t('(Unknown)');
       }
     }
@@ -188,7 +197,7 @@ function cwrc_workflow_preprocess_cwrc_workflow_stamp(&$variables) {
 }
 
 /**
- * Implementation of hook_preprocess_cwrc_workflow_stamps().
+ * Implements hook_preprocess_cwrc_workflow_stamps().
  */
 function cwrc_workflow_preprocess_cwrc_workflow_stamps(&$variables) {
   foreach ($variables['stamps'] as $delta => $stamp) {
@@ -201,7 +210,7 @@ function cwrc_workflow_preprocess_cwrc_workflow_stamps(&$variables) {
 }
 
 /**
- * Implementation of hook_preprocess_cwrc_workflow_stamps_block().
+ * Implements hook_preprocess_cwrc_workflow_stamps_block().
  */
 function cwrc_workflow_preprocess_cwrc_workflow_stamps_block(&$variables) {
   foreach ($variables['stamps'] as $delta => $stamp) {
@@ -219,7 +228,7 @@ function cwrc_workflow_preprocess_cwrc_workflow_stamps_block(&$variables) {
 function cwrc_workflow_block_info() {
   $blocks['recent_stamps'] = array(
     'info' => t('Recent workflow stamps'),
-    'cache' => DRUPAL_CACHE_PER_PAGE
+    'cache' => DRUPAL_CACHE_PER_PAGE,
   );
 
   $blocks['stamp_form'] = array(
@@ -245,7 +254,7 @@ function cwrc_workflow_block_configure($delta = '') {
 }
 
 /**
- * Implementation of hook_block_save().
+ * Implements hook_block_save().
  */
 function cwrc_workflow_block_save($delta = '', $edit = array()) {
   if ($delta == 'recent_stamps') {
@@ -271,17 +280,18 @@ function cwrc_workflow_block_view($delta = '') {
         }
       }
       break;
+
     case 'stamp_form':
       if ($object = menu_get_object('islandora_object', 2)) {
         module_load_include('inc', 'islandora_workflow_rest', 'includes/workflow.form');
         // Run Islandora access callback.
         if (islandora_object_manage_access_callback(array(
-            ISLANDORA_MANAGE_PROPERTIES,
-            ISLANDORA_METADATA_EDIT,
-            ISLANDORA_ADD_DS,
-            ISLANDORA_PURGE,
-            ISLANDORA_INGEST,
-          ), $object)) {
+          ISLANDORA_MANAGE_PROPERTIES,
+          ISLANDORA_METADATA_EDIT,
+          ISLANDORA_ADD_DS,
+          ISLANDORA_PURGE,
+          ISLANDORA_INGEST,
+        ), $object)) {
 
           $block['subject'] = t('Add workflow stamp');
           $block['content'] = drupal_get_form('islandora_workflow_rest_entry_form', $object);
@@ -298,10 +308,10 @@ function cwrc_workflow_block_view($delta = '') {
 function cwrc_workflow_get_stamps($num_stamps = NULL) {
   $object = menu_get_object('islandora_object', 2);
 
-  // sanity check
-  if ($object === null
+  // Sanity check.
+  if ($object === NULL
     || !isset($object[CWRC_WORKFLOW_DSID])) {
-    return false;
+    return FALSE;
   }
 
   $workflow = @simplexml_load_string($object[CWRC_WORKFLOW_DSID]->content)->xpath('workflow');
@@ -313,14 +323,13 @@ function cwrc_workflow_get_stamps($num_stamps = NULL) {
 }
 
 /**
- * Implementation of hook_form_islandora_workflow_rest_entry_form_alter().
- *
- * Alters the workflow stamp entry form to be more user friendly.
+ * Implements hook_form_islandora_workflow_rest_entry_form_alter().
  */
 function cwrc_workflow_form_islandora_workflow_rest_entry_form_alter(&$form, &$form_state, $form_id) {
+  // Alters the workflow stamp entry form to be more user friendly.
   // These are for viewing the workflow datastream, no longer necessary.
-  $form['workflow_wfds_fs']['#access'] = false;
-  $form['workflow_wfs_fs']['#access'] = false;
+  $form['workflow_wfds_fs']['#access'] = FALSE;
+  $form['workflow_wfs_fs']['#access'] = FALSE;
 
   // Break "Add workflow stamp" items out of their fieldset.
   $form['workflow_fs_activity'] = $form['workflow_wfs_add_fs']['workflow_fs_activity'];
@@ -329,9 +338,9 @@ function cwrc_workflow_form_islandora_workflow_rest_entry_form_alter(&$form, &$f
   unset($form['workflow_wfs_add_fs']);
 
   // Uncollapse a couple of items.
-  $form['workflow_fs_activity']['#collapsed'] = false;
-  $form['workflow_fs_assigned']['workflow_fs_assigned_message']['#collapsed'] = false;
-  $form['workflow_fs_assigned']['workflow_fs_assigned_message']['#collapsible'] = false;
+  $form['workflow_fs_activity']['#collapsed'] = FALSE;
+  $form['workflow_fs_assigned']['workflow_fs_assigned_message']['#collapsed'] = FALSE;
+  $form['workflow_fs_assigned']['workflow_fs_assigned_message']['#collapsible'] = FALSE;
 
   // Move "Notification" assign section up.
   $form['workflow_fs_assigned']['workflow_fs_assigned_message']['#weight'] = -10;
@@ -339,11 +348,10 @@ function cwrc_workflow_form_islandora_workflow_rest_entry_form_alter(&$form, &$f
 
 /**
  * Implements hook_islandora_datastream_alter().
- *
- * Sets some session variables that trigger a modal window with the workflow
- * stamp form to appear.
  */
 function cwrc_workflow_islandora_datastream_alter(AbstractObject $object, AbstractDatastream $datastream, array &$context) {
+  // Sets some session variables that trigger a modal window with the workflow
+  // stamp form to appear.
   // Only fire on "modify" action.
   if ($context['action'] == 'modify') {
     // Get DSID whitelist keyed by cmodel PID.
@@ -376,17 +384,16 @@ function cwrc_workflow_islandora_datastream_alter(AbstractObject $object, Abstra
 
 /**
  * Implements hook_page_alter().
- *
- * Adds a modal with the workflow stamp form embedded to encourage users to fill
- * out workflow stamps as they use the CWRC interface.
  */
 function cwrc_workflow_page_alter(&$page) {
+  // Adds a modal with the workflow stamp form embedded to encourage users to
+  // fill out workflow stamps as they use the CWRC interface.
   global $user;
 
   // Load dependencies for saving form data.
   if (isset($_SESSION['cwrc_workflow'])) {
     $object = menu_get_object('islandora_object', 2);
-    if ($object != null) {
+    if ($object != NULL) {
       module_load_include('inc', 'islandora_workflow_rest', 'includes/workflow.form');
       $form = drupal_get_form('islandora_workflow_rest_entry_form', $object);
 
@@ -421,7 +428,7 @@ function cwrc_workflow_page_alter(&$page) {
   if (isset($_SESSION['cwrc_workflow']['alerts'])) {
     $alerts = $_SESSION['cwrc_workflow']['alerts'];
     $object = menu_get_object('islandora_object', 2);
-    if ($object != null
+    if ($object != NULL
       && isset($alerts[$object->id])) {
 
       // Plural format for datastreams.

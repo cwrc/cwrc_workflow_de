@@ -1,3 +1,14 @@
+<?php
+
+/**
+ * @file
+ * Displays a workflow stamp modal.
+ *
+ * Available variables:
+ * - $message: The workflow stamp message.
+ * - $form: The workflow stamp form.
+ */
+?>
 <div class="cwrc-workflow-stamp-form-modal remodal" data-remodal-id="cwrc-workflow-modal">
   <button data-remodal-action="close" class="remodal-close"></button>
   <h1>Add workflow stamp</h1>

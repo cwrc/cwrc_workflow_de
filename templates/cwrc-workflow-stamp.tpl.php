@@ -1,3 +1,10 @@
+<?php
+
+/**
+ * @file
+ * Displays an individual workflow stamp.
+ */
+?>
 <div class="<?php print $classes; ?>">
   <div class="cwrc-workflow-stamp-row activity-category">
     <span class="cwrc-workflow-content"><?php print $activity_category; ?></span>
