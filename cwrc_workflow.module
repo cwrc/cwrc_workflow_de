@@ -396,7 +396,7 @@ function cwrc_workflow_page_alter(&$page) {
           ->fetchField();
 
         if ($lid) {
-          $form['#action'] = $form['#action'] . '/view/history';
+          $form['#action'] = $form['#action'] . '/view/history?lid=' . urlencode($lid);
         }
       }
     }
