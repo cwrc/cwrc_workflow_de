@@ -396,7 +396,7 @@ function cwrc_workflow_page_alter(&$page) {
           ->fetchField();
 
         if ($lid) {
-          $form['#action'] = $form['#action'] . '?lid=' . $lid;
+          $form['#action'] = $form['#action'] . '/view/history?lid=' . urlencode($lid);
         }
       }
     }
@@ -421,8 +421,8 @@ function cwrc_workflow_page_alter(&$page) {
       $both  = array_filter(array_merge(array($first), $last), 'strlen');
       $datastreams = implode(' and ', $both);
       $message = format_plural(count($alerts[$object->id]['ds_string']),
-        'You have edited the <strong>%datastreams</strong> datastream, please add a workflow stamp to this object (you may also do this later from the "History" tab).',
-        'You have edited the <strong>%datastreams</strong> datastreams, please add a workflow stamp to this object (you may also do this later from the "History" tab).',
+        'You have edited the %datastreams datastream.  Please add a workflow stamp to this object (you may also do this later from the "History" tab).',
+        'You have edited the %datastreams datastreams.  Please add a workflow stamp to this object (you may also do this later from the "History" tab).',
         array('%datastreams' => $datastreams));
 
       // Inject form into page bottom region.
