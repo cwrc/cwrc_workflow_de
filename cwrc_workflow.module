@@ -131,10 +131,11 @@ function cwrc_workflow_preprocess_cwrc_workflow_stamp(&$variables) {
   // Parses out the various elements of a workflow stamp using xpath.
   $stamp = $variables['stamp'];
 
-  // These values always exist.
-  $variables['stamp_id'] = (string) $stamp->xpath('@workflowID')[0];
+  // These values always exist. - this statement is not always cwrc_workflow_object_history_page
+   // not all have stamps, e.g., https://cwrc.ca/islandora/object/cwrc%3A0de8a798-ff5a-4d73-96dc-ba28d2ce14c4/datastream/WORKFLOW/view
+  $variables['stamp_id'] = $stamp->xpath('@workflowID') ? (string) $stamp->xpath('@workflowID')[0] : "";
   $variables['activity_category'] = (string) $stamp->xpath('activity/@category')[0];
-  $variables['activity_stamp'] = (string) $stamp->xpath('activity/@stamp')[0];
+  $variables['activity_stamp'] = $stamp->xpath('activity/@stamp') ? (string) $stamp->xpath('activity/@stamp')[0] : "";
   $variables['activity_status'] = (string) $stamp->xpath('activity/@status')[0];
 
   // Date the stamp was created.
